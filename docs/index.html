@@ -122,12 +122,12 @@
             box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4);
         }
         .btn-secondary {
-            padding: 15px 36px; background: var(--bg-card); color: var(--text);
+            padding: 15px 36px; background: var(--bg-elevated); color: var(--text);
             border: 1px solid var(--border-bright); border-radius: 10px;
             text-decoration: none; font-weight: 600; font-size: 1em;
             transition: all 0.25s;
         }
-        .btn-secondary:hover { background: var(--bg-hover); border-color: var(--accent); }
+        .btn-secondary:hover { background: var(--bg-hover); border-color: var(--accent-hover); color: var(--accent-hover); }
 
         /* Stats bar */
         .stats {
@@ -177,7 +177,7 @@
             border: 1px solid rgba(99, 102, 241, 0.3);
         }
         .timeline-card h3 { font-size: 1.15em; font-weight: 700; margin-bottom: 8px; }
-        .timeline-card p { color: var(--text-muted); font-size: 0.92em; line-height: 1.65; }
+        .timeline-card p { color: #b0b0c8; font-size: 0.92em; line-height: 1.65; }
 
         /* Feature grid */
         .features-grid {
@@ -197,7 +197,7 @@
         }
         .feature-card .icon-wrap svg { width: 22px; height: 22px; }
         .feature-card h3 { font-size: 1.05em; font-weight: 700; margin-bottom: 8px; }
-        .feature-card p { color: var(--text-muted); font-size: 0.88em; line-height: 1.6; }
+        .feature-card p { color: #b0b0c8; font-size: 0.88em; line-height: 1.6; }
 
         /* Example bounty */
         .bounty-demo {
@@ -241,22 +241,22 @@
             border-bottom: 1px solid var(--border);
         }
         .code-block {
-            background: var(--bg); border: 1px solid var(--border);
-            border-radius: 14px; padding: 28px 32px; margin-top: 32px;
-            font-family: 'JetBrains Mono', monospace; font-size: 0.875em;
-            overflow-x: auto; line-height: 2.2; max-width: 720px; margin-left: auto; margin-right: auto;
+            background: var(--bg); border: 1px solid var(--border-bright);
+            border-radius: 14px; padding: 32px 36px; margin-top: 32px;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.95em;
+            overflow-x: auto; line-height: 2.4; max-width: 720px; margin-left: auto; margin-right: auto;
         }
         .code-block .line { display: block; }
-        .code-block .comment { color: var(--text-dim); }
+        .code-block .comment { color: #707088; }
         .code-block .method {
             font-weight: 600; padding: 2px 10px; border-radius: 6px; margin-right: 8px;
         }
         .code-block .method.get { color: var(--green); background: var(--green-dim); }
         .code-block .method.post { color: var(--accent-hover); background: var(--accent-glow); }
         .code-block .key { color: var(--gold); }
-        .code-block .string { color: var(--green); }
+        .code-block .string { color: #4ade80; }
         .code-block .path { color: var(--text); font-weight: 500; }
-        .code-block .arrow { color: var(--text-dim); }
+        .code-block .arrow { color: var(--text-muted); }
         .code-block .response { color: var(--text-muted); }
 
         /* CTA section */
@@ -273,7 +273,7 @@
         }
         .cta-card:hover { border-color: var(--accent-dim); transform: translateY(-2px); }
         .cta-card h3 { font-size: 1.1em; font-weight: 700; margin-bottom: 8px; }
-        .cta-card p { color: var(--text-muted); font-size: 0.9em; margin-bottom: 24px; }
+        .cta-card p { color: #b0b0c8; font-size: 0.9em; margin-bottom: 24px; }
         .cta-card .btn-primary { font-size: 0.9em; padding: 12px 28px; }
         .cta-card .btn-secondary { font-size: 0.9em; padding: 12px 28px; }
 
@@ -284,7 +284,7 @@
             border-top: 1px solid var(--border);
         }
         .final-cta h2 { margin-bottom: 12px; }
-        .final-cta p { color: var(--text-muted); margin-bottom: 32px; }
+        .final-cta p { color: #b0b0c8; margin-bottom: 32px; }
 
         /* Footer */
         footer {
@@ -299,21 +299,21 @@
             flex: 1; min-width: 200px;
         }
         footer .footer-brand .logo { font-size: 1.1em; margin-bottom: 12px; }
-        footer .footer-brand p { color: var(--text-dim); font-size: 0.85em; max-width: 300px; }
+        footer .footer-brand p { color: var(--text-muted); font-size: 0.85em; max-width: 300px; }
         footer .footer-cols { display: flex; gap: 64px; }
         footer .footer-col h4 {
             font-size: 0.8em; text-transform: uppercase; letter-spacing: 0.08em;
-            color: var(--text-dim); margin-bottom: 12px; font-weight: 700;
+            color: var(--text-muted); margin-bottom: 12px; font-weight: 700;
         }
         footer .footer-col a {
-            display: block; color: var(--text-muted); text-decoration: none;
+            display: block; color: #9090a8; text-decoration: none;
             font-size: 0.875em; padding: 4px 0; transition: color 0.2s;
         }
         footer .footer-col a:hover { color: var(--text); }
         footer .footer-bottom {
             max-width: 1140px; margin: 40px auto 0; padding-top: 24px;
             border-top: 1px solid var(--border); text-align: center;
-            color: var(--text-dim); font-size: 0.8em;
+            color: var(--text-muted); font-size: 0.8em;
         }
 
         @media (max-width: 768px) {
