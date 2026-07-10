@@ -30,6 +30,7 @@ from urllib.parse import urlparse, parse_qs
 import ledger
 import battle_arena
 import recap_engine
+import bounties
 
 PORT = int(os.environ.get("DOJO_API_PORT", "8820"))
 GITHUB_PAT = os.environ.get("GITTENSOR_MINER_PAT", "")
@@ -135,6 +136,14 @@ class DojoAPIHandler(BaseHTTPRequestHandler):
             self._handle_battles()
             return
 
+        if path == "/bounties":
+            self._handle_bounties_list()
+            return
+
+        if path == "/bounties/pending":
+            self._handle_bounties_pending()
+            return
+
         if path == "/leaderboard":
             rows = ledger.get_leaderboard(limit=20)
             self._send_json(200, {
@@ -200,6 +209,22 @@ class DojoAPIHandler(BaseHTTPRequestHandler):
 
         if path == "/battle/submit":
             self._handle_battle_submit()
+            return
+
+        if path == "/bounty/post":
+            self._handle_bounty_post()
+            return
+
+        if path == "/bounty/submit":
+            self._handle_bounty_submit()
+            return
+
+        if path == "/bounty/close":
+            self._handle_bounty_close()
+            return
+
+        if path == "/bounty/submissions":
+            self._handle_bounty_submissions()
             return
 
         self._send_json(404, {"error": f"Unknown endpoint: {path}"})
@@ -372,6 +397,199 @@ class DojoAPIHandler(BaseHTTPRequestHandler):
                 "recap": recap.for_loser() if recap else "",
                 "message": "Battle lost. Review the recap and try again.",
             })
+
+    # --- Bounty handlers ---
+
+    def _handle_bounties_list(self):
+        """GET /bounties — list all open bounties."""
+        bounties_list = bounties.get_open_bounties()
+        self._send_json(200, {
+            "bounties": [
+                {
+                    "id": b["id"],
+                    "title": b["title"],
+                    "description": b["description"],
+                    "repo": b["repo"],
+                    "amount": b["amount"],
+                    "close_trigger": b["close_trigger"],
+                    "close_value": b["close_value"],
+                    "submission_count": b["submission_count"],
+                    "created_at": b["created_at"],
+                }
+                for b in bounties_list
+            ],
+            "note": "POST /bounty/submit to submit code for a bounty."
+        })
+
+    def _handle_bounties_pending(self):
+        """GET /bounties/pending — bounties waiting for pool to pick winner (pool operator only)."""
+        pending = bounties.get_pending_selection()
+        self._send_json(200, {
+            "pending": [
+                {
+                    "bounty_id": b["id"],
+                    "title": b["title"],
+                    "amount": b["amount"],
+                    "submissions": len(bounties.get_submissions(b["id"])),
+                }
+                for b in pending
+            ],
+            "note": "POST /bounty/close with bounty_id and winner_submission_id to select winner."
+        })
+
+    def _handle_bounty_post(self):
+        """POST /bounty/post — pool posts a new bounty.
+
+        Requires pool API key (special auth — not a contributor key).
+        """
+        contributor_id = authenticate(self.headers)
+        if not contributor_id:
+            self._send_json(401, {"error": "Unauthorized"})
+            return
+
+        body = self._read_body()
+        title = body.get("title")
+        description = body.get("description")
+        repo = body.get("repo")
+        amount = body.get("amount")
+
+        if not all([title, description, repo, amount]):
+            self._send_json(400, {"error": "Required: title, description, repo, amount"})
+            return
+
+        close_trigger = body.get("close_trigger", "manual")
+        close_value = body.get("close_value")
+        issue_url = body.get("issue_url", "")
+
+        bounty_id = bounties.post_bounty(
+            title=title,
+            description=description,
+            repo=repo,
+            amount=amount,
+            issue_url=issue_url,
+            close_trigger=close_trigger,
+            close_value=close_value,
+        )
+        self._send_json(200, {
+            "bounty_id": bounty_id,
+            "title": title,
+            "amount": amount,
+            "close_trigger": close_trigger,
+            "message": "Bounty posted. Contributors can now submit code."
+        })
+
+    def _handle_bounty_submit(self):
+        """POST /bounty/submit — agent submits code for a bounty."""
+        contributor_id = authenticate(self.headers)
+        if not contributor_id:
+            self._send_json(401, {"error": "Unauthorized"})
+            return
+
+        body = self._read_body()
+        bounty_id = body.get("bounty_id")
+        code = body.get("code")
+
+        if not bounty_id or not code:
+            self._send_json(400, {"error": "Required: bounty_id, code"})
+            return
+
+        bounty = bounties.get_bounty(bounty_id)
+        if not bounty:
+            self._send_json(404, {"error": f"Bounty {bounty_id} not found"})
+            return
+
+        if bounty["status"] not in ("open",):
+            self._send_json(400, {"error": f"Bounty is {bounty['status']}, not accepting submissions"})
+            return
+
+        submission_id = bounties.submit_to_bounty(bounty_id, contributor_id, code)
+
+        # Load agent memory for recap
+        memory = recap_engine.get_agent_memory(contributor_id, limit=10)
+
+        self._send_json(200, {
+            "submission_id": submission_id,
+            "bounty_id": bounty_id,
+            "status": "submitted",
+            "message": "Your code has been submitted. The pool will review all submissions and select a winner.",
+            "your_memory": memory,
+        })
+
+    def _handle_bounty_close(self):
+        """POST /bounty/close — pool selects the winning submission and closes the bounty."""
+        contributor_id = authenticate(self.headers)
+        if not contributor_id:
+            self._send_json(401, {"error": "Unauthorized"})
+            return
+
+        body = self._read_body()
+        bounty_id = body.get("bounty_id")
+        winner_submission_id = body.get("winner_submission_id")
+
+        if not bounty_id or not winner_submission_id:
+            self._send_json(400, {"error": "Required: bounty_id, winner_submission_id"})
+            return
+
+        bounty = bounties.get_bounty(bounty_id)
+        if not bounty:
+            self._send_json(404, {"error": f"Bounty {bounty_id} not found"})
+            return
+
+        if bounty["status"] == "closed":
+            self._send_json(400, {"error": "Bounty already closed"})
+            return
+
+        result = bounties.close_bounty(bounty_id, winner_submission_id)
+
+        self._send_json(200, {
+            "bounty_id": bounty_id,
+            "winner_submission_id": winner_submission_id,
+            "winner_contributor_id": result["winner_id"],
+            "amount_paid": bounty["amount"],
+            "message": "Bounty closed. Winner selected. Payout recorded.",
+        })
+
+    def _handle_bounty_submissions(self):
+        """GET /bounty/submissions?bounty_id=N — view all submissions for a bounty.
+
+        Public — this is the fraud prevention layer. All contributors can see
+        who submitted what and when.
+        """
+        query = parse_qs(urlparse(self.path).query)
+        bounty_id = query.get("bounty_id", [None])[0]
+
+        if not bounty_id:
+            self._send_json(400, {"error": "Required: bounty_id query parameter"})
+            return
+
+        try:
+            bounty_id = int(bounty_id)
+        except ValueError:
+            self._send_json(400, {"error": "bounty_id must be a number"})
+            return
+
+        subs = bounties.get_submissions(bounty_id)
+        bounty = bounties.get_bounty(bounty_id)
+
+        self._send_json(200, {
+            "bounty_id": bounty_id,
+            "bounty_title": bounty["title"] if bounty else None,
+            "bounty_status": bounty["status"] if bounty else None,
+            "bounty_amount": bounty["amount"] if bounty else None,
+            "submissions": [
+                {
+                    "id": s["id"],
+                    "contributor": s["telegram_handle"],
+                    "submitted_at": s["created_at"],
+                    "is_winner": bool(s["is_winner"]),
+                    # Note: code is included for transparency (fraud prevention)
+                    "code_preview": s["code"][:500] + ("..." if len(s["code"]) > 500 else ""),
+                    "code_length": len(s["code"]),
+                }
+                for s in subs
+            ],
+            "note": "All submissions are timestamped and publicly visible for fraud prevention."
+        })
 
     def log_message(self, format, *args):
         pass  # quiet

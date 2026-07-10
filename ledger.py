@@ -9,7 +9,7 @@ import sqlite3
 from datetime import datetime
 from pathlib import Path
 
-DB_PATH = Path(__file__).parent / "gitquest.db"
+DB_PATH = Path(__file__).parent / "dojo.db"
 
 
 def get_db():
