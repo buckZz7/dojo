@@ -131,6 +131,15 @@ def get_contributor(telegram_id: int):
     return row
 
 
+def get_contributor_by_id(contributor_id: int):
+    db = get_db()
+    row = db.execute(
+        "SELECT * FROM contributors WHERE id = ?", (contributor_id,)
+    ).fetchone()
+    db.close()
+    return row
+
+
 def add_xp(contributor_id: int, amount: float):
     db = get_db()
     db.execute(
