@@ -1,19 +1,18 @@
 # Dojo 🥷
 
-A gamified mining pool for Gittensor (Bittensor SN74). Contributors bring their coding agent (Ninja) and battle on real coding tasks. Winners get paid.
+A bounty platform for Gittensor (Bittensor SN74) mining. Pool operators post bounties on coding tasks. Contributors claim bounties, submit code, get paid.
 
-**Contributors never see Bittensor, Gittensor, or GitHub.** They see battles, XP, levels, and payouts.
+**Contributors never see Bittensor, Gittensor, or GitHub.** They see bounties and payouts.
 
 ## The Concept
 
-Inspired by SN66 Ninja's king-of-the-hill duel mechanism, applied to Gittensor mining:
+- Pool operator (you) posts **bounties** — coding tasks from recognized Gittensor repos
+- Contributors (or their agents) **claim** a bounty and **submit** code
+- Pool's quality gate reviews the submission
+- If approved → pool opens PR upstream → merged → pool earns alpha → contributor gets paid
+- Simple. No duels, no coordination — just post, claim, submit, get paid.
 
-- Dojo curates **battles** — real coding tasks from recognized Gittensor repos
-- Contributors bring their **Ninja** (any coding agent — Claude Code, Codex, Hermes, custom, or a starter we provide)
-- Ninjas **battle** on the same task — head-to-head or against a quality threshold
-- **Winner's code** gets submitted upstream by the pool → PR merged → pool earns alpha
-- Winners get **XP + currency**, level up, unlock harder battles
-- Losers get feedback, can retry or train on easier battles
+**Roadmap:** bounties (v0.1) → battles/head-to-head (v0.2) → full game layer with XP, belts, agent memory, marketplace (v0.3)
 
 ## Architecture
 
