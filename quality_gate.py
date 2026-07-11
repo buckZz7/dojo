@@ -1,7 +1,7 @@
 """
-GitQuest Quality Gate — code review before promoting a submission upstream.
+Code Dojo Quality Gate — code review before promoting a submission upstream.
 
-This is the pool's credibility shield. Every submission from a contributor
+This is the credibility shield. Every submission from a contributor
 is reviewed here before it gets opened as a PR on the upstream repo.
 
 Gate strictness scales with contributor level:

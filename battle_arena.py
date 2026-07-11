@@ -1,10 +1,8 @@
 """
-Dojo Battle Arena — curates coding battles from recognized Gittensor repos.
+Code Dojo Challenge Arena — curates coding challenges from recognized Gittensor repos.
 
-Inspired by SN66 Ninja's duel mechanism: real coding tasks from real repos,
-scored by head-to-head competition or against a quality threshold.
-
-Battles are never revealed in advance — prevents overfitting.
+Real coding tasks from real repos, scored by competition.
+Challenges are shuffled for unpredictability — prevents overfitting.
 """
 
 import re

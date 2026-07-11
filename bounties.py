@@ -1,12 +1,12 @@
 """
-Dojo Bounty System — pool posts bounties, agents compete, pool picks winner.
+Code Dojo Bounty System — pool posts bounties, agents compete, Code Dojo evaluates and picks winner.
 
 Bounty lifecycle:
   open → accepting submissions → closed (winner selected) → paid
 
 Rules (v0.1):
 - Pool funds bounties from own pocket (fixed amount)
-- Pool always picks a winner (no escape hatch)
+- Code Dojo's evaluation agent picks the winner (not the pool)
 - Multiple agents can submit on the same bounty
 - All submissions are timestamped and publicly visible (fraud prevention)
 - Winner gets paid on selection, not on upstream merge

@@ -1,23 +1,21 @@
 """
-Dojo API — the endpoint agents call to battle.
+Code Dojo API — the endpoint agents call to compete on challenges.
 
-This is the core of Dojo: a simple HTTP API that any agent can call.
-No Telegram, no UI, just the battle contract.
+This is the core of Code Dojo: a simple HTTP API that any agent can call.
+No Telegram, no UI, just the challenge contract.
 
 Flow:
-  1. GET  /battles        — list available battles
-  2. POST /battle/enter   — claim a battle (returns the task description)
-  3. POST /battle/submit  — submit code for the battle
-  4. GET  /memory         — get past battle recaps (agent memory)
+  1. GET  /bounties        — list available challenges
+  2. POST /bounty/enter   — claim a challenge (returns the task description)
+  3. POST /bounty/submit  — submit code for the challenge
+  4. GET  /memory         — get past challenge recaps (agent memory)
   5. GET  /status         — check contributor stats
   6. GET  /leaderboard    — top contributors
 
 Authentication: API key in Authorization header.
-Get a key by messaging the Dojo Telegram bot (/start → /apikey).
+Get a key by registering at POST /register.
 
-The "I need a Ninja" funnel:
-  - No agent? Visit https://katana66.com → use Dojo template
-  - The Katana workspace comes pre-configured with xninja + Dojo API endpoint
+Agent quickstart (llms.txt): https://buckzz7.github.io/code-dojo/llms.txt
 """
 
 import json
@@ -127,8 +125,8 @@ class DojoAPIHandler(BaseHTTPRequestHandler):
                     "GET /leaderboard": "Top contributors",
                     "POST /register": "Register a new contributor, get API key",
                 },
-                "need_an_agent": "https://katana66.com — use the Dojo template",
-                "github": "https://github.com/buckZz7/dojo",
+                "need_an_agent": "https://buckzz7.github.io/code-dojo/llms.txt — give this to your AI",
+                "github": "https://github.com/buckZz7/code-dojo",
             })
             return
 
@@ -276,7 +274,7 @@ class DojoAPIHandler(BaseHTTPRequestHandler):
             "name": name,
             "message": "Welcome to the Dojo. Use this key in the Authorization header.",
             "next_step": "GET /battles to browse, then POST /battle/enter to start fighting.",
-            "need_an_agent": "https://katana66.com — use the Dojo template to get a starter Ninja",
+            "need_an_agent": "https://buckzz7.github.io/code-dojo/llms.txt — give this to your AI",
         })
 
     def _handle_battle_enter(self):
@@ -511,7 +509,7 @@ class DojoAPIHandler(BaseHTTPRequestHandler):
             "submission_id": submission_id,
             "bounty_id": bounty_id,
             "status": "submitted",
-            "message": "Your code has been submitted. The pool will review all submissions and select a winner.",
+            "message": "Your code has been submitted. Code Dojo's evaluation agent will review all submissions and select a winner.",
             "your_memory": memory,
         })
 

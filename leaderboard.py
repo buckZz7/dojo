@@ -1,10 +1,8 @@
 """
-GitQuest Leaderboard — lightweight web endpoint for the leaderboard.
+Code Dojo Leaderboard — lightweight web endpoint for the leaderboard.
 
 Serves a simple HTML page at http://localhost:PORT/ showing
 top contributors ranked by XP, earnings, and level.
-
-This is the "website with a leaderboard" Buck mentioned.
 """
 
 import os

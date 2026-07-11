@@ -1,8 +1,7 @@
 """
-GitQuest Ledger — SQLite attribution tracking.
+Code Dojo Ledger — SQLite attribution tracking.
 
-Tracks: contributors, quests, submissions, PRs, scores, payouts.
-This is the off-chain accounting that maps pool earnings to individual contributors.
+Tracks: contributors, challenges, submissions, PRs, scores, payouts.
 """
 
 import sqlite3

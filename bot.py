@@ -1,17 +1,18 @@
 """
-Dojo Telegram Bot — the battleground interface.
+Code Dojo Telegram Bot — the contributor interface.
 
-Contributors bring their Ninja (coding agent) and battle on real coding tasks.
-They never see GitHub, Bittensor, or Gittensor.
+Contributors connect via Telegram. This is their account, settings, and
+notification channel. Their AI agent communicates with Code Dojo via the
+HTTP API (see api.py and llms.txt).
 
 Commands:
-  /start     — Enter the Dojo, register your Ninja
-  /battles   — Browse available battles (curated from recognized repos)
-  /battle <N> — Enter a battle
-  /submit    — Submit your Ninja's code for the battle
-  /status    — Check your Ninja's rank, XP, level
+  /start     — Register your account
+  /bounties  — Browse available challenges
+  /bounty <N> — Enter a challenge
+  /submit    — Submit your code
+  /status    — Check your rank, XP, level
   /arena     — Live leaderboard
-  /cashout   — Withdraw earnings for real TAO
+  /cashout   — Withdraw earnings for TAO
 """
 
 import os
@@ -49,19 +50,19 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(
         f"🥷 **Welcome to the Dojo**\n\n"
-        f"Your Ninja is registered: **{user.username or user.first_name}**\n"
+        f"Your AI is registered: **{user.username or user.first_name}**\n"
         f"Rank: {contributor['level']} | XP: {contributor['xp']} | 💰: {contributor['currency']}\n\n"
         f"**How it works:**\n"
         f"1. Browse battles with /battles\n"
         f"2. Enter a battle with /battle <N>\n"
-        f"3. Your Ninja writes code to solve it\n"
+        f"3. Your AI writes code to solve it\n"
         f"4. Submit with /submit\n"
         f"5. Win → earn XP + currency → level up\n\n"
         f"⚔️ **Commands:**\n"
         f"/battles — Available battles\n"
         f"/battle <N> — Enter battle\n"
         f"/submit — Submit your solution\n"
-        f"/status — Your Ninja's stats\n"
+        f"/status — Your agent's stats\n"
         f"/arena — Leaderboard\n"
         f"/cashout — Withdraw earnings\n\n"
         f"Train well. The battles are real."
@@ -136,7 +137,7 @@ async def battle(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"📦 {b.repo}\n"
         f"🎯 {b.difficulty.upper()} belt | ⚡ {b.xp_reward} XP\n\n"
         f"**The Challenge:**\n{b.body}\n\n"
-        f"Send your Ninja to solve it. Use /submit when ready.\n"
+        f"Send your AI to solve it. Use /submit when ready.\n"
         f"Win → earn XP + currency. Lose → train and retry."
     )
 
@@ -217,7 +218,7 @@ async def submit(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text(
                 f"📝 **Battle Recap**\n\n"
                 f"{recap.for_winner()}\n"
-                f"Your Ninja has learned from this battle. "
+                f"Your agent has learned from this challenge. "
                 f"These insights will inform your next fight."
             )
     else:
@@ -244,12 +245,12 @@ async def submit(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"Feedback: {feedback}\n\n"
             f"{'📝 **Battle Recap:**\\n' + recap.for_loser() + '\\n' if recap else ''}"
             f"No XP lost, but your reputation took a small hit.\n"
-            f"Your Ninja has learned from this defeat. Train and try again: /submit"
+            f"Your agent has learned from this defeat. Train and try again: /submit"
         )
 
 
 async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Show Ninja stats."""
+    """Show agent stats."""
     user = update.effective_user
     contributor = ledger.get_contributor(user.id)
 
@@ -260,7 +261,7 @@ async def status(update: Update, context: ContextTypes.DEFAULT_TYPE):
     belt = "🥋 White" if contributor["level"] < 4 else "🟡 Yellow" if contributor["level"] < 10 else "🥷 Black"
 
     await update.message.reply_text(
-        f"🥷 **Your Ninja**\n\n"
+        f"🥷 **Your Agent**\n\n"
         f"Name: {contributor['telegram_handle']}\n"
         f"Belt: {belt} (Level {contributor['level']})\n"
         f"XP: {contributor['xp']} ⚡\n"

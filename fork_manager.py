@@ -1,8 +1,8 @@
 """
-GitQuest Fork Manager — manages the pool's forks of recognized repos.
+Code Dojo Fork Manager — manages forks of recognized repos.
 
 Flow:
-  1. Pool forks each recognized repo to buckZz7/<repo-name>
+  1. Fork each recognized repo to the pool GitHub account
   2. Contributor submits code → creates a branch on the fork
   3. Quality gate reviews the branch
   4. If approved → pool opens PR from fork to upstream
